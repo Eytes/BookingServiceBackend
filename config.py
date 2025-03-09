@@ -1,11 +1,21 @@
-from pymongo import MongoClient
+import os
+
+from pydantic import PositiveInt
+from pydantic_settings import BaseSettings
 
 
-class Config:
-    MONGO_URI = "mongodb://username:password@localhost:27017/"
-    DATABASE_NAME = "bookingservice"
+class MongoSettings(BaseSettings):
 
-config = Config()
+    username: str = os.getenv("MONGO_USERNAME")  # type: ignore
+    password: str = os.getenv("MONGO_PASSWORD")  # type: ignore
+    host: str = os.getenv("MONGO_HOST")
+    port: PositiveInt = os.getenv("MONGO_PORT")
+    database_name: str = os.getenv("MONGO_DATABASE_NAME")
+    url: str = f"mongodb://{username}:{password}@{host}:{port}/"
 
-client = MongoClient(config.MONGO_URI)
-db = client[config.DATABASE_NAME]
+
+class Settings(BaseSettings):
+    mongodb: MongoSettings = MongoSettings()
+
+
+settings = Settings()
